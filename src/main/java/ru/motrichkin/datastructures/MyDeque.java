@@ -1,10 +1,12 @@
 package ru.motrichkin.datastructures;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 public class MyDeque<ItemClass> {
 
     static private int DEFAULT_CAPACITY = 3;
 
-    protected int capacity;
     protected int right;
     protected int left;
     protected ItemClass[] array;
@@ -17,14 +19,13 @@ public class MyDeque<ItemClass> {
         if (capacity < DEFAULT_CAPACITY) {
             capacity = DEFAULT_CAPACITY;
         }
-        this.capacity = capacity;
         array = (ItemClass[]) new Object[capacity];
         left = 0;
         right = left + 1;
     }
 
     protected void expand() {
-        int newCapacity = capacity * 2;
+        int newCapacity = array.length * 2;
         ItemClass[] newArray = (ItemClass[]) new Object[newCapacity];
         int newLeft = newCapacity / 4;
         if (realLeft() < realRight()) {
@@ -36,8 +37,7 @@ public class MyDeque<ItemClass> {
         array = newArray;
         int size = size();
         left = newLeft;
-        right = newLeft + size;
-        capacity = newCapacity;
+        right = newLeft + size + 1;
     }
 
     protected void checkCapacity() {
@@ -55,7 +55,7 @@ public class MyDeque<ItemClass> {
     }
 
     public int size() {
-        return right - left;
+        return right - left - 1;
     }
 
     public void appendRight(ItemClass item) {

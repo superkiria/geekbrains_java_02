@@ -9,7 +9,7 @@ import ru.motrichkin.datastructures.MyDeque;
 @RunWith(JUnit4.class)
 public class MyDequeTests {
 
-    private int AMOUNT_OF_ELEMENTS = 10;
+    private int AMOUNT_OF_ELEMENTS = 100000;
 
     @Test
     public void expandingTest_01() {
