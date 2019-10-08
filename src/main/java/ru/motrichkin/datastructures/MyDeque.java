@@ -1,8 +1,5 @@
 package ru.motrichkin.datastructures;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 public class MyDeque<ItemClass> {
 
     static private int DEFAULT_CAPACITY = 3;
