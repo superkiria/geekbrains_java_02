@@ -114,7 +114,6 @@ public class BinaryTree<Item extends Comparable> implements Set {
             return true;
         }
         if (this.item.compareTo(o) == 0) {
-            item = null;
             return true;
         }
         return false;
@@ -211,6 +210,32 @@ public class BinaryTree<Item extends Comparable> implements Set {
         return stringBuilder.toString();
     }
 
+    public String toStrangeString() {
+        return toStringWithLevel(0);
+    }
+
+    private String toStringWithLevel(int level) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(level);
+        stringBuilder.append(":");
+        String itemString = item != null ? item.toString() : "#";
+        stringBuilder.append(itemString);
+        stringBuilder.append(" ");
+        if (hasLeft()) {
+            stringBuilder.append(level);
+            stringBuilder.append("L:[");
+            stringBuilder.append(left.toStringWithLevel(level + 1));
+            stringBuilder.append("]");
+        }
+        if (hasRight()) {
+            stringBuilder.append(level);
+            stringBuilder.append("R:[");
+            stringBuilder.append(hasRight() ? right.toStringWithLevel(level + 1) : "");
+            stringBuilder.append("]");
+        }
+        return stringBuilder.toString();
+    }
+
     public boolean isBalancedBySize() {
         if (!hasLeft() && !hasRight()) {
             return true;
@@ -229,10 +254,10 @@ public class BinaryTree<Item extends Comparable> implements Set {
             return true;
         }
         if (!hasRight()) {
-            return left.level() < 2 && left.isBalancedByLevel();
+            return left.level() < 2;
         }
         if (!hasLeft()) {
-            return right.level() < 2 && right.isBalancedByLevel();
+            return right.level() < 2;
         }
         return Math.abs(left.level() - right.level()) < 2 && left.isBalancedByLevel() && right.isBalancedByLevel();
     }

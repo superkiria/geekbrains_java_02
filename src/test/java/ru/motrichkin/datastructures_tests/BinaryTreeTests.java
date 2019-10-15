@@ -79,7 +79,7 @@ public class BinaryTreeTests {
         int unbalancedBySize = 0;
         int balancedByLevel = 0;
         int unbalancedByLevel = 0;
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 200000; i++) {
             BinaryTree<Integer> tree = new BinaryTree<Integer>();
             while (tree.level() < 7) {
                 tree.add(random.nextInt(201) - 100);
@@ -93,6 +93,9 @@ public class BinaryTreeTests {
                 balancedByLevel++;
             } else {
                 unbalancedByLevel++;
+            }
+            if (tree.isBalancedBySize() ^ tree.isBalancedByLevel()) {
+                System.out.println(tree.toStrangeString());
             }
         }
         System.out.println("By size:");
