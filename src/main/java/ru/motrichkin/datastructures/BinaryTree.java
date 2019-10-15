@@ -211,7 +211,7 @@ public class BinaryTree<Item extends Comparable> implements Set {
         return stringBuilder.toString();
     }
 
-    public boolean isBalanced() {
+    public boolean isBalancedBySize() {
         if (!hasLeft() && !hasRight()) {
             return true;
         }
@@ -221,7 +221,20 @@ public class BinaryTree<Item extends Comparable> implements Set {
         if (!hasLeft()) {
             return right.size() < 2;
         }
-        return Math.abs(left.size() - right.size()) < 2;
+        return Math.abs(left.size() - right.size()) < 2 && left.isBalancedBySize() && right.isBalancedBySize();
+    }
+
+    public boolean isBalancedByLevel() {
+        if (!hasLeft() && !hasRight()) {
+            return true;
+        }
+        if (!hasRight()) {
+            return left.level() < 2 && left.isBalancedByLevel();
+        }
+        if (!hasLeft()) {
+            return right.level() < 2 && right.isBalancedByLevel();
+        }
+        return Math.abs(left.level() - right.level()) < 2 && left.isBalancedByLevel() && right.isBalancedByLevel();
     }
 
     public int level() {

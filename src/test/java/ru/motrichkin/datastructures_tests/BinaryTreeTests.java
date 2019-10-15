@@ -75,22 +75,34 @@ public class BinaryTreeTests {
     @Test
     public void balancingTest() {
         Random random = new Random();
-        int balanced = 0;
-        int unbalanced = 0;
-        for (int i = 0; i < 200000; i++) {
+        int balancedBySize = 0;
+        int unbalancedBySize = 0;
+        int balancedByLevel = 0;
+        int unbalancedByLevel = 0;
+        for (int i = 0; i < 2000; i++) {
             BinaryTree<Integer> tree = new BinaryTree<Integer>();
-            while (tree.level() < 6) {
+            while (tree.level() < 7) {
                 tree.add(random.nextInt(201) - 100);
             }
-            if (tree.isBalanced()) {
-                balanced++;
+            if (tree.isBalancedBySize()) {
+                balancedBySize++;
             } else {
-                unbalanced++;
+                unbalancedBySize++;
+            }
+            if (tree.isBalancedByLevel()) {
+                balancedByLevel++;
+            } else {
+                unbalancedByLevel++;
             }
         }
-        System.out.println("Balanced: " + balanced);
-        System.out.println("Unbalanced: " + unbalanced);
-        System.out.println("Percent of balanced: " + (100. * balanced / (balanced + unbalanced)));
+        System.out.println("By size:");
+        System.out.println("Balanced: " + balancedBySize);
+        System.out.println("Unbalanced: " + unbalancedBySize);
+        System.out.println("Percent of balanced: " + (100. * balancedBySize / (balancedBySize + unbalancedBySize)));
+        System.out.println("By level:");
+        System.out.println("Balanced: " + balancedByLevel);
+        System.out.println("Unbalanced: " + unbalancedByLevel);
+        System.out.println("Percent of balanced: " + (100. * balancedByLevel / (balancedByLevel + unbalancedByLevel)));
     }
 
 }
