@@ -9,24 +9,26 @@ public class MyDeque<ItemClass> implements Deque {
 
     static private int DEFAULT_CAPACITY = 3;
 
-    protected int right;
-    protected int left;
-    protected ItemClass[] array;
+    private int initial_capacity;
+    private int right;
+    private int left;
+    private ItemClass[] array;
 
     public MyDeque() {
         this(DEFAULT_CAPACITY);
     }
 
-    public MyDeque(int capacity) {
+    private MyDeque(int capacity) {
         if (capacity < DEFAULT_CAPACITY) {
             capacity = DEFAULT_CAPACITY;
         }
+        initial_capacity = capacity;
         array = (ItemClass[]) new Object[capacity];
         left = 0;
         right = left + 1;
     }
 
-    protected void expand() {
+    private void expand() {
         int newCapacity = array.length * 2;
         ItemClass[] newArray = (ItemClass[]) new Object[newCapacity];
         int newLeft = newCapacity / 4;
@@ -42,18 +44,22 @@ public class MyDeque<ItemClass> implements Deque {
         right = newLeft + size + 1;
     }
 
-    protected void checkCapacity() {
+    private void checkCapacity() {
         if (! (array.length - (right - left) > 0)) {
             expand();
         }
     }
 
-    protected int realRight() {
-        return right >= 0 ? right % array.length: array.length + right;
+    private int realRight() {
+        return realPosition(right);
     }
 
-    protected int realLeft() {
-        return left >= 0 ? left % array.length : array.length + left;
+    private int realLeft() {
+        return realPosition(left);
+    }
+
+    private int realPosition(int position) {
+        return position >= 0 ? position % array.length : array.length + position;
     }
 
     public void appendRight(ItemClass item) {
@@ -86,6 +92,12 @@ public class MyDeque<ItemClass> implements Deque {
         return result;
     }
 
+    private void throwExceptionIfEmpty() {
+        if (size() == 0) {
+            throw new NoSuchElementException("The queue is empty");
+        }
+    }
+
     @Override
     public void addFirst(Object o) {
         appendLeft((ItemClass) o);
@@ -99,26 +111,24 @@ public class MyDeque<ItemClass> implements Deque {
     @Override
     public boolean offerFirst(Object o) {
         appendLeft((ItemClass) o);
+        return true;
     }
 
     @Override
     public boolean offerLast(Object o) {
         appendRight((ItemClass) o);
+        return true;
     }
 
     @Override
     public Object removeFirst() {
-        if (size() == 0) {
-            throw new NoSuchElementException("The queue is empty");
-        }
+        throwExceptionIfEmpty();
         return popLeft();
     }
 
     @Override
     public Object removeLast() {
-        if (size() == 0) {
-            throw new NoSuchElementException("The queue is empty");
-        }
+        throwExceptionIfEmpty();
         return popRight();
     }
 
@@ -134,26 +144,35 @@ public class MyDeque<ItemClass> implements Deque {
 
     @Override
     public Object getFirst() {
-        return null;
+        throwExceptionIfEmpty();
+        return array[realPosition(left + 1)];
     }
 
     @Override
     public Object getLast() {
-        return null;
+        throwExceptionIfEmpty();
+        return array[realPosition(left + 1)];
     }
 
     @Override
     public Object peekFirst() {
-        return null;
+        return array[realPosition(right - 1)];
     }
 
     @Override
     public Object peekLast() {
-        return null;
+        return array[realPosition(right - 1)];
     }
 
     @Override
     public boolean removeFirstOccurrence(Object o) {
+        int i = left;
+        do {
+            i++;
+        } while (i < right && ! array[realPosition(i)].equals(o));
+        if (i < right) {
+            return true;
+        }
         return false;
     }
 
@@ -199,7 +218,9 @@ public class MyDeque<ItemClass> implements Deque {
 
     @Override
     public void clear() {
-
+        array = (ItemClass[]) new Object[initial_capacity];
+        left = 0;
+        right = left + 1;
     }
 
     @Override
@@ -234,7 +255,11 @@ public class MyDeque<ItemClass> implements Deque {
 
     @Override
     public boolean contains(Object o) {
-        return false;
+        int i = left;
+        do {
+            i++;
+        } while (i < right && ! array[realPosition(i)].equals(o));
+        return i < right;
     }
 
     @Override
@@ -244,7 +269,7 @@ public class MyDeque<ItemClass> implements Deque {
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size() != 0;
     }
 
     @Override
