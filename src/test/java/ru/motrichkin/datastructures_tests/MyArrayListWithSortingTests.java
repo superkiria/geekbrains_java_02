@@ -11,7 +11,7 @@ import ru.motrichkin.datastructures.MyArrayListWithSorting;
 @RunWith(JUnit4.class)
 public class MyArrayListWithSortingTests {
 
-    private static int AMOUNT_OF_ELEMENTS = 100000;
+    private static int AMOUNT_OF_ELEMENTS = 10000;
 
     private static Random randomForSeed = new Random();
 

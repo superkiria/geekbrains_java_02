@@ -1,9 +1,12 @@
 package ru.motrichkin.datastructures_tests;
 
 import org.junit.Assert;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import ru.motrichkin.datastructures.*;
 import org.junit.Test;
 
+@RunWith(JUnit4.class)
 public class MyArrayListTests {
 
     @Test
