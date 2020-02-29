@@ -4,14 +4,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import ru.motrichkin.datastructures.MyDeque;
+import ru.motrichkin.datastructures.MyArrayDeque;
 
 @RunWith(JUnit4.class)
 public class StringReverseTest {
 
     @Test
     public void stringReverseTest() {
-        MyDeque<Character> deque = new MyDeque<Character>();
+        MyArrayDeque<Character> deque = new MyArrayDeque<Character>();
         String testString = "Эту строку нужно перевернуть!";
         testString.chars().forEach(i -> deque.appendRight((char) i));
         char[] chars = new char[deque.size()];
