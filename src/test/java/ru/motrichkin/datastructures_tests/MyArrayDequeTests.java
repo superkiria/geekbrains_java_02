@@ -7,14 +7,14 @@ import org.junit.runners.JUnit4;
 import ru.motrichkin.datastructures.MyArrayDeque;
 
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Iterator;
 
 @RunWith(JUnit4.class)
 public class MyArrayDequeTests {
 
-    private int AMOUNT_OF_ELEMENTS = 100000;
+    private int AMOUNT_OF_ELEMENTS = 1000000;
 
     @Test
     public void sizeTest() {
@@ -275,6 +275,31 @@ public class MyArrayDequeTests {
     }
 
     @Test
+    public void retainAllTest_02() {
+        MyArrayDeque<Integer> deque = new MyArrayDeque<Integer>();
+        deque.appendRight(1);
+        deque.appendRight(2);
+        deque.appendRight(3);
+        deque.appendRight(4);
+        deque.appendRight(5);
+        deque.appendRight(6);
+        deque.appendRight(7);
+        deque.appendRight(8);
+        deque.appendRight(9);
+        deque.appendRight(10);
+        Assert.assertTrue(Arrays.equals(deque.toArray(), (new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})));
+        HashSet<Integer> set = new HashSet<>();
+        set.add(1);
+        set.add(2);
+        set.add(3);
+        set.add(4);
+        set.add(5);
+        set.add(10);
+        deque.retainAll(set);
+        Assert.assertTrue(Arrays.equals(deque.toArray(), (new Integer[]{1, 2, 3, 4, 5, 10})));
+    }
+
+    @Test
     public void removeAllTest_01() {
         MyArrayDeque<Integer> deque = new MyArrayDeque<Integer>();
         deque.appendRight(1);
@@ -295,6 +320,29 @@ public class MyArrayDequeTests {
     }
 
     @Test
+    public void removeAllTest_02() {
+        MyArrayDeque<Integer> deque = new MyArrayDeque<Integer>();
+        deque.appendRight(1);
+        deque.appendRight(2);
+        deque.appendRight(3);
+        deque.appendRight(4);
+        deque.appendRight(5);
+        deque.appendRight(6);
+        deque.appendRight(7);
+        deque.appendRight(8);
+        deque.appendRight(9);
+        deque.appendRight(10);
+        Assert.assertTrue(Arrays.equals(deque.toArray(), (new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})));
+        HashSet<Integer> set = new HashSet<>();
+        set.add(6);
+        set.add(7);
+        set.add(8);
+        set.add(9);
+        deque.removeAll(set);
+        Assert.assertTrue(Arrays.equals(deque.toArray(), (new Integer[]{1, 2, 3, 4, 5, 10})));
+    }
+
+    @Test
     public void toArrayTest_01() {
         MyArrayDeque<Integer> deque = new MyArrayDeque<Integer>();
         deque.appendRight(1);
@@ -306,44 +354,45 @@ public class MyArrayDequeTests {
         Assert.assertTrue(Arrays.equals(deque.toArray(array), new Integer[]{1, 2, 3, 4, 5, null, null}));
     }
 
-//    @Test
-//    public void simplestTest_01() {
-//        MyArrayDeque<Integer> deque = new MyArrayDeque<Integer>();
-//        System.out.println(deque.arrayToString());
-//        deque.appendRight(1);
-//        System.out.println(deque.arrayToString());
-//        deque.appendRight(2);
-//        System.out.println(deque.arrayToString());
-//        deque.appendRight(3);
-//        System.out.println(deque.arrayToString());
-//        deque.appendRight(4);
-//        System.out.println(deque.arrayToString());
-//        deque.appendRight(5);
-//        System.out.println(deque.arrayToString());
-//    }
-//
-//    @Test
-//    public void simplestTest_02() {
-//        MyArrayDeque<Integer> deque = new MyArrayDeque<Integer>();
-//        System.out.println(deque.arrayToString());
-//        deque.appendLeft(1);
-//        System.out.println(deque.arrayToString());
-//        deque.appendLeft(2);
-//        System.out.println(deque.arrayToString());
-//        deque.appendLeft(3);
-//        System.out.println(deque.arrayToString());
-//        deque.appendLeft(4);
-//        System.out.println(deque.arrayToString());
-//        deque.appendLeft(5);
-//        System.out.println(deque.arrayToString());
-//        deque.appendLeft(6);
-//        deque.appendLeft(7);
-//        deque.appendLeft(8);
-//        deque.appendLeft(9);
-//        deque.appendLeft(10);
-//        System.out.println(deque.arrayToString());
-//        deque.appendLeft(11);
-//        System.out.println(deque.arrayToString());
-//    }
+    @Test
+    public void iteratorTest_01() {
+        MyArrayDeque<Integer> deque = new MyArrayDeque<Integer>();
+        for (int i = 0; i < AMOUNT_OF_ELEMENTS; i++) {
+            deque.appendRight(i);
+        }
+        Iterator iterator = deque.iterator();
+        for (int i = 0; i < AMOUNT_OF_ELEMENTS; i++) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        deque.appendLeft(-1);
+        try {
+            iterator.hasNext();
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof ConcurrentModificationException);
+        }
+    }
 
+    @Test
+    public void descendingIteratorTest_01() {
+        MyArrayDeque<Integer> deque = new MyArrayDeque<Integer>();
+        for (int i = 0; i < AMOUNT_OF_ELEMENTS; i++) {
+            deque.appendLeft(i);
+        }
+        Iterator iterator = deque.descendingIterator();
+        for (int i = 0; i < AMOUNT_OF_ELEMENTS; i++) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        deque.appendRight(-1);
+        try {
+            iterator.hasNext();
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof ConcurrentModificationException);
+        }
+    }
 }
