@@ -4,7 +4,7 @@ import java.util.*;
 
 public class MyArrayDeque<ItemClass> implements Deque {
 
-    static private int DEFAULT_CAPACITY = 3;
+    static private int DEFAULT_CAPACITY = 4;
 
     private int initial_capacity;
     private int right;
@@ -30,10 +30,8 @@ public class MyArrayDeque<ItemClass> implements Deque {
         ItemClass[] newArray = (ItemClass[]) new Object[newCapacity];
         int newLeft = newCapacity / 4;
         if (realPosition(left + 1) <= realPosition(right - 1)) {
-//            System.out.println("A");
             System.arraycopy(array, realPosition(left + 1), newArray, newLeft + 1, size());
         } else {
-//            System.out.println("B " + left + " " + realPosition(left + 1));
             System.arraycopy(array, realPosition(left + 1), newArray, newLeft + 1, array.length - realLeft() - 1);
             System.arraycopy(array, 0, newArray, newLeft + array.length - realLeft(), realRight());
         }
@@ -63,16 +61,11 @@ public class MyArrayDeque<ItemClass> implements Deque {
 
     private void remove(int position) {
         if (position - left < right - position) {
-            // вариант А
             if (realPosition(left + 1) <= realPosition(position)) {
-                // вариант А.1
-                System.out.println("A1");
                 System.arraycopy(array, realPosition(left + 1), array, realPosition(left + 1) + 1, realPosition(position) - realPosition(left + 1));
                 left++;
                 array[realPosition(left)] = null;
             } else {
-                // вариант А.5
-                System.out.println("A5");
                 System.arraycopy(array, 0, array, 1, realPosition(position));
                 array[0] = array[array.length - 1];
                 System.arraycopy(array, realPosition(right + 1), array, realPosition(right + 1) + 1, array.length - realPosition(right) - 2);
@@ -80,14 +73,11 @@ public class MyArrayDeque<ItemClass> implements Deque {
                 array[realPosition(left)] = null;
             }
         } else {
-            // вариант B
             if (realPosition(position) <= realPosition(right - 1)) {
-                System.out.println("B2");
                 System.arraycopy(array, realPosition(position + 1), array, realPosition(position), realPosition(right - 1) - realPosition(position));
                 right--;
                 array[realPosition(right)] = null;
             } else {
-                System.out.println("B6");
                 System.arraycopy(array, realPosition(position + 1), array, realPosition(position), array.length - realPosition(position) - 1);
                 array[array.length - 1] = array[0];
                 System.arraycopy(array, 1, array, 0, realPosition(right) - 1);
@@ -280,15 +270,12 @@ public class MyArrayDeque<ItemClass> implements Deque {
 
     @Override
     public boolean retainAll(Collection collection) {
-        while (size() > 0 && !collection.contains(peekFirst())) {
-            removeFirst();
-        }
-        while (size() > 0 && !collection.contains(peekLast())) {
-            removeLast();
-        }
-        for (int i = left + 2; i < right - 1 && size() > 0; i++) {
-            if (!collection.contains(array[realPosition(i)])) {
-                remove(i);
+        int size = size();
+        for(int i = 0; i < size; i++) {
+            if (collection.contains(peekFirst())) {
+                addLast(removeFirst());
+            } else {
+                removeFirst();
             }
         }
         return true;
@@ -296,20 +283,12 @@ public class MyArrayDeque<ItemClass> implements Deque {
 
     @Override
     public boolean removeAll(Collection collection) {
-        while (size() > 0 && collection.contains(peekFirst())) {
-            removeFirst();
-        }
-        while (size() > 0 && collection.contains(peekLast())) {
-            removeLast();
-        }
-        for (int i = left + 2; i < right - left / 2; i++) {
-            if (collection.contains(array[realPosition(i)])) {
-                remove(i);
-            }
-        }
-        for (int i = right - 2; i >= right - left / 2; i--) {
-            if (collection.contains(array[realPosition(i)])) {
-                remove(i);
+        int size = size();
+        for(int i = 0; i < size; i++) {
+            if (collection.contains(peekFirst())) {
+                removeFirst();
+            } else {
+                addLast(removeFirst());
             }
         }
         return true;
@@ -393,12 +372,44 @@ public class MyArrayDeque<ItemClass> implements Deque {
 
     @Override
     public Iterator iterator() {
-        return null;
+        return new LocalIterator(left, 1);
     }
 
     @Override
     public Iterator descendingIterator() {
-        return null;
+        return new LocalIterator(right, -1);
+    }
+
+    private class LocalIterator implements Iterator {
+
+        int left = MyArrayDeque.this.left;
+        int right = MyArrayDeque.this.right;
+        int position;
+        int step;
+
+        LocalIterator(int start, int step) {
+            this.position = start;
+            this.step = step;
+        }
+
+        @Override
+        public boolean hasNext() {
+            throwExceptionIfConcurrentModification();
+            return position + step < right && position + step > left;
+        }
+
+        @Override
+        public Object next() {
+            throwExceptionIfConcurrentModification();
+            position += step;
+            return array[realPosition(position)];
+        }
+
+        private void throwExceptionIfConcurrentModification() {
+            if (left != MyArrayDeque.this.left || right != MyArrayDeque.this.right) {
+                throw new ConcurrentModificationException("Deque was changed during iteration");
+            }
+        }
     }
 
     public Object[] getUnderlyingArray() {
